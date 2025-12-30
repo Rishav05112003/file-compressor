@@ -13,7 +13,10 @@ export async function POST(request: NextRequest) {
     const text = await file.text();
     const compressed = deflate(text);
 
-    return new NextResponse(compressed, {
+    // FIX: Cast compressed to 'any' to bypass the SharedArrayBuffer check
+    const blob = new Blob([compressed as any]);
+
+    return new NextResponse(blob, {
       headers: {
         "Content-Type": "application/octet-stream",
         "Content-Disposition": `attachment; filename="${file.name.replace(
