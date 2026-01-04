@@ -1,32 +1,38 @@
 import { NextRequest, NextResponse } from "next/server";
-import { deflate } from "@/lib/core/deflate";
+import { deflate } from "@/lib/core/deflate"; 
 
-export async function POST(request: NextRequest) {
+export async function POST(req: NextRequest) {
   try {
-    const formData = await request.formData();
-    const file = formData.get("file") as File | null;
+    const formData = await req.formData();
+    const file = formData.get("file") as File;
 
     if (!file) {
-      return NextResponse.json({ error: "No file provided" }, { status: 400 });
+      return NextResponse.json({ error: "No file uploaded" }, { status: 400 });
     }
 
+    // 1. Read input text
     const text = await file.text();
-    const compressed = deflate(text);
 
-    // FIX: Cast compressed to 'any' to bypass the SharedArrayBuffer check
-    const blob = new Blob([compressed as any]);
+    // 2. Compress (returns Uint8Array)
+    const compressedBytes = deflate(text);
 
-    return new NextResponse(blob, {
+    // 3. Encode Binary to Base64 String
+    // This makes it safe to save as a .txt file without data loss
+    const base64String = Buffer.from(compressedBytes).toString('base64');
+
+    // 4. Return as a .txt file
+    return new NextResponse(base64String, {
       headers: {
-        "Content-Type": "application/octet-stream",
-        "Content-Disposition": `attachment; filename="${file.name.replace(
-          ".txt",
-          "-deflated.txt"
-        )}"`,
+        "Content-Type": "text/plain",
+        "Content-Disposition": 'attachment; filename="compressed.txt"',
       },
     });
-  } catch (err) {
-    console.error(err);
-    return NextResponse.json({ error: "Compression failed" }, { status: 500 });
+
+  } catch (error: any) {
+    console.error("Compression API Error:", error);
+    return NextResponse.json(
+      { error: error.message || "Compression failed" },
+      { status: 500 }
+    );
   }
 }
