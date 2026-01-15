@@ -232,6 +232,8 @@ export default function HomePage() {
 
         {/* FEATURES ... */}
         {/* (Keep Feature Grid and Footer from your previous code) */}
+        {isLoading && <Loader message={mode === "compress" ? "Compressing file..." : "Restoring file..."} />}
+
       </main>
     </div>
   );
