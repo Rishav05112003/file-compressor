@@ -188,17 +188,7 @@ Browser-friendly | ✅ | ❌ | ❌ |
 
 ---
 
-## 🔮 Roadmap
 
-- [ ] Binary file support (PNG, MP3, PDF)
-- [ ] Streaming compression
-- [ ] Progress tracking
-- [ ] WASM optimization
-- [ ] Unicode support
-- [ ] Batch uploads
-- [ ] PWA support
-
----
 
 ## 🤝 Contributing
 
